@@ -24,6 +24,7 @@ interface User {
   student_name: string;
   email: string;
   course_name: string;
+  certificateUrl: string; // New property for certificate URL
 }
 
 const UserTable: React.FC = () => {
@@ -33,120 +34,70 @@ const UserTable: React.FC = () => {
       student_name: "John Doe",
       email: "john.doe@example.com",
       course_name: "Introduction to React",
+      certificateUrl: "https://example.com/certificates/john-doe",
     },
     {
       id: "2",
       student_name: "Jane Smith",
       email: "jane.smith@example.com",
       course_name: "Advanced Node.js",
+      certificateUrl: "https://example.com/certificates/jane-smith",
     },
     {
       id: "3",
       student_name: "Alice Johnson",
       email: "alice.johnson@example.com",
       course_name: "CSS Flexbox",
+      certificateUrl: "https://example.com/certificates/alice-johnson",
     },
     {
       id: "4",
       student_name: "Bob Brown",
       email: "bob.brown@example.com",
       course_name: "TypeScript Basics",
+      certificateUrl: "https://example.com/certificates/bob-brown",
     },
     {
       id: "5",
       student_name: "Charlie Davis",
       email: "charlie.davis@example.com",
       course_name: "Python for Data Science",
+      certificateUrl: "https://example.com/certificates/charlie-davis",
     },
     {
       id: "6",
       student_name: "Daisy Evans",
       email: "daisy.evans@example.com",
       course_name: "Machine Learning",
+      certificateUrl: "https://example.com/certificates/daisy-evans",
     },
     {
       id: "7",
       student_name: "Edward Clark",
       email: "edward.clark@example.com",
       course_name: "JavaScript ES6",
+      certificateUrl: "https://example.com/certificates/edward-clark",
     },
     {
       id: "8",
       student_name: "Fiona Martinez",
       email: "fiona.martinez@example.com",
       course_name: "React Native Development",
+      certificateUrl: "https://example.com/certificates/fiona-martinez",
     },
     {
       id: "9",
       student_name: "George Wilson",
       email: "george.wilson@example.com",
       course_name: "Django for Beginners",
+      certificateUrl: "https://example.com/certificates/george-wilson",
     },
     {
       id: "10",
       student_name: "Hannah Lewis",
       email: "hannah.lewis@example.com",
       course_name: "Cloud Computing",
-    },
-    {
-      id: "11",
-      student_name: "Isaac Walker",
-      email: "isaac.walker@example.com",
-      course_name: "Deep Learning",
-    },
-    {
-      id: "12",
-      student_name: "Jessica Hall",
-      email: "jessica.hall@example.com",
-      course_name: "Full-Stack Development",
-    },
-    {
-      id: "13",
-      student_name: "Kevin Allen",
-      email: "kevin.allen@example.com",
-      course_name: "Software Engineering",
-    },
-    {
-      id: "14",
-      student_name: "Laura Young",
-      email: "laura.young@example.com",
-      course_name: "Database Management",
-    },
-    {
-      id: "15",
-      student_name: "Michael King",
-      email: "michael.king@example.com",
-      course_name: "API Design",
-    },
-    {
-      id: "16",
-      student_name: "Nina Scott",
-      email: "nina.scott@example.com",
-      course_name: "UX/UI Design",
-    },
-    {
-      id: "17",
-      student_name: "Oscar Wright",
-      email: "oscar.wright@example.com",
-      course_name: "Blockchain Technology",
-    },
-    {
-      id: "18",
-      student_name: "Pamela Green",
-      email: "pamela.green@example.com",
-      course_name: "Computer Networks",
-    },
-    {
-      id: "19",
-      student_name: "Quincy Adams",
-      email: "quincy.adams@example.com",
-      course_name: "Web Security",
-    },
-    {
-      id: "20",
-      student_name: "Rachel Carter",
-      email: "rachel.carter@example.com",
-      course_name: "Data Visualization",
+      certificateUrl: "https://example.com/certificates/hannah-lewis",
     },
   ];
 
@@ -169,7 +120,7 @@ const UserTable: React.FC = () => {
   const endIndex = startIndex + usersPerPage;
   const currentUsers = filteredData.slice(startIndex, endIndex);
 
-  // Log selected users whenever selection changes
+  // Log selected users
   useEffect(() => {
     const selectedUsers = initialData.filter((user) =>
       selectedUserIds.includes(user.id)
@@ -227,6 +178,7 @@ const UserTable: React.FC = () => {
     console.log("Email Data:", emailData);
 
     // Here you would integrate with your email service
+
     // For example:
     // emailService.sendBulkEmails(emailData);
 
@@ -284,7 +236,7 @@ const UserTable: React.FC = () => {
               </TableHead>
               <TableHead
                 style={{
-                  width: "30%",
+                  width: "20%",
                   padding: "8px",
                   boxSizing: "border-box",
                 }}
@@ -293,7 +245,7 @@ const UserTable: React.FC = () => {
               </TableHead>
               <TableHead
                 style={{
-                  width: "30%",
+                  width: "20%",
                   padding: "8px",
                   boxSizing: "border-box",
                 }}
@@ -302,12 +254,21 @@ const UserTable: React.FC = () => {
               </TableHead>
               <TableHead
                 style={{
-                  width: "30%",
+                  width: "20%",
                   padding: "8px",
                   boxSizing: "border-box",
                 }}
               >
                 COURSE
+              </TableHead>
+              <TableHead
+                style={{
+                  width: "10%",
+                  padding: "8px",
+                  boxSizing: "border-box",
+                }}
+              >
+                CERTIFICATE
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -328,7 +289,7 @@ const UserTable: React.FC = () => {
                 </TableCell>
                 <TableCell
                   style={{
-                    width: "30%",
+                    width: "20%",
                     padding: "8px",
                     boxSizing: "border-box",
                   }}
@@ -337,7 +298,7 @@ const UserTable: React.FC = () => {
                 </TableCell>
                 <TableCell
                   style={{
-                    width: "30%",
+                    width: "20%",
                     padding: "8px",
                     boxSizing: "border-box",
                   }}
@@ -346,12 +307,28 @@ const UserTable: React.FC = () => {
                 </TableCell>
                 <TableCell
                   style={{
-                    width: "30%",
+                    width: "20%",
                     padding: "8px",
                     boxSizing: "border-box",
                   }}
                 >
                   {user.course_name}
+                </TableCell>
+                <TableCell
+                  style={{
+                    width: "30%",
+                    padding: "8px",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <a
+                    href={user.certificateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    View Certificate
+                  </a>
                 </TableCell>
               </TableRow>
             ))}
