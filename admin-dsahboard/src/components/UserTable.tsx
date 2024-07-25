@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -17,7 +17,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface User {
@@ -151,39 +150,49 @@ const UserTable: React.FC = () => {
     },
   ];
 
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const usersPerPage = 10;
-  const totalPages = Math.ceil(initialData.length / usersPerPage);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const usersPerPage = 10;
+
+  // Filtered data based on search query
+  const filteredData = useMemo(() => {
+    return initialData.filter((user) =>
+      user.student_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
+  // Pagination calculation based on filtered data
+  const totalPages = Math.ceil(filteredData.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
-  const currentUsers = initialData.slice(startIndex, endIndex);
+  const currentUsers = filteredData.slice(startIndex, endIndex);
+
+  // Log selected users whenever selection changes
+  useEffect(() => {
+    const selectedUsers = initialData.filter((user) =>
+      selectedUserIds.includes(user.id)
+    );
+    console.log("Selected Users:", selectedUsers);
+  }, [selectedUserIds]);
 
   const handleSelectUser = (id: string) => {
-    setSelectedUsers((prevSelectedUsers) => {
-      const updatedSelection = prevSelectedUsers.includes(id)
-        ? prevSelectedUsers.filter((userId) => userId !== id)
-        : [...prevSelectedUsers, id];
+    setSelectedUserIds((prevSelectedUserIds) => {
+      const updatedSelection = prevSelectedUserIds.includes(id)
+        ? prevSelectedUserIds.filter((userId) => userId !== id)
+        : [...prevSelectedUserIds, id];
 
-      console.log(
-        "Selected Users:",
-        initialData.filter((user) => updatedSelection.includes(user.id))
-      );
       return updatedSelection;
     });
   };
 
   const handleSelectAll = () => {
-    setSelectedUsers((prevSelectedUsers) => {
-      const allUserIds = initialData.map((user) => user.id);
+    setSelectedUserIds((prevSelectedUserIds) => {
+      const allUserIds = filteredData.map((user) => user.id);
       const updatedSelection =
-        prevSelectedUsers.length === allUserIds.length ? [] : allUserIds;
+        prevSelectedUserIds.length === allUserIds.length ? [] : allUserIds;
 
-      console.log(
-        "Selected Users:",
-        initialData.filter((user) => updatedSelection.includes(user.id))
-      );
       return updatedSelection;
     });
   };
@@ -193,9 +202,65 @@ const UserTable: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+    setCurrentPage(1); // Reset to the first page on search
+  };
+
+  const handleSearchSubmit = () => {
+    console.log("Search Query:", searchQuery);
+  };
+
+  const handleSendEmails = () => {
+    const selectedUsers = initialData.filter((user) =>
+      selectedUserIds.includes(user.id)
+    );
+
+    // Prepare email data
+    const emailData = selectedUsers.map((user) => ({
+      to: user.email,
+      subject: "Course Completion Certificate",
+      body: `Dear ${user.student_name},\n\nYou have successfull completed the course: ${user.course_name}.\n\nBest regards,\nYour Course Team`,
+    }));
+
+    // Log email data for debugging
+    console.log("Email Data:", emailData);
+
+    // Here you would integrate with your email service
+    // For example:
+    // emailService.sendBulkEmails(emailData);
+
+    alert("Emails are prepared. Check the console for email details.");
+  };
+
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
-      <div className="w-[80%] bg-white shadow-md rounded-lg p-3 overflow-hidden">
+      <div className="flex flex-row gap-3 items-start mb-4">
+        <div className="flex flex-row gap-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search by name"
+            className="border rounded-md p-2 flex-grow"
+          />
+          <button
+            onClick={handleSearchSubmit}
+            className="bg-orange-500 text-white hover:shadow-lg duration-300 rounded-md px-4 py-2 gap-1"
+          >
+            Search
+          </button>
+          <div className="items-end">
+            <button
+              onClick={handleSendEmails}
+              className="bg-green-500 text-white hover:shadow-lg duration-300 rounded-md px-4 py-2 gap-1"
+            >
+              Send Emails
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="w-[80%] h-[550px] bg-white shadow-md rounded-lg p-3 overflow-hidden">
         <Table
           className="w-full divide-y divide-gray-200"
           style={{ tableLayout: "fixed" }}
@@ -211,7 +276,7 @@ const UserTable: React.FC = () => {
               >
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    checked={selectedUsers.length === initialData.length}
+                    checked={selectedUserIds.length === filteredData.length}
                     onCheckedChange={handleSelectAll}
                   />
                   <span className="text-gray-700 font-medium">Select All</span>
@@ -257,7 +322,7 @@ const UserTable: React.FC = () => {
                   }}
                 >
                   <Checkbox
-                    checked={selectedUsers.includes(user.id)}
+                    checked={selectedUserIds.includes(user.id)}
                     onCheckedChange={() => handleSelectUser(user.id)}
                   />
                 </TableCell>
